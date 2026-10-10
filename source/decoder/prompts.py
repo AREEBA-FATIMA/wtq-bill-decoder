@@ -22,7 +22,10 @@ PROVIDER_HINTS = {
 - "Amount Payable within Due Date" -> payable_within_due_date. "Due Date" box -> due_date.
 - Late amounts: "Amount Payable from .. with 5% LPS" and "Amount Payable after .. with 10% LPS" -> put ALL in
   late_payment_amounts; payable_after_due_date = the last/highest.
-- Meter readings in "Electricity You Have Used": Previous Reading, Current Reading, Units.""",
+- Meter readings in "Electricity You Have Used": Previous Reading, Current Reading, Units.
+  If that table has SEVERAL rows (Energy - Off Peak / Peak / Import ...), previous_reading and current_reading
+  are null, and units_consumed is the total in the "Current Month ... units" box (e.g. "286 units").
+  NEVER join numbers from different rows (238 and 48 are two rows, not 23848).""",
     "LESCO": """LESCO / IESCO (WAPDA-style) layout — exact mapping:
 - Top-right panel: BILL MONTH (e.g. "JUL 2026" -> 2026-07), READING DATE, ISSUE DATE, DUE DATE.
   PAYABLE WITHIN DUE DATE -> payable_within_due_date (keep CR, e.g. "54770CR").
@@ -208,7 +211,32 @@ Return ONE JSON object with exactly these keys:
 # ---------------------------------------------------------------------------
 
 # Filled at 12:30 after reading test/csv/level2.csv. Keyed by question_id ("Q1".."Q12").
-QUESTION_HINTS: dict[str, str] = {}
+QUESTION_HINTS: dict[str, str] = {
+    "Q1": "Look at the image and data for net-metering signs: the words 'NET METERING' / 'Net Metering Benefit', "
+          "customer type NM, separate Import/Export meter rows, negative or CR units in history, credit bills. "
+          "Say net-metered or standard and name the exact evidence you saw.",
+    "Q2": "Use last_12_months_incl_current.highest; also check history_excl_current_highest. If they differ, say "
+          "which 12-month window you used (state your interpretation).",
+    "Q3": "Use fpa entries in charges_by_type_pkr and printed_charge_lines labels (e.g. 'FCA Feb-26') plus any FPA "
+          "note on the bill image (e.g. 'FPA FEB-26 @ 1.4235', Total FPA). Give amount and the month it relates to; "
+          "if the month is not printed, say so.",
+    "Q4": "Use late_payment_tiers_vs_on_time and late_payment_extra_pkr_max: each window/date, surcharge and total "
+          "payable. If the bill says not to be paid / none printed, say so.",
+    "Q5": "Use change_vs_same_month_last_year (units and %). If that month is not in the history, say so.",
+    "Q6": "Use history_excl_current_average_units (previous months) and current_vs_history_average; mention the "
+          "number of months averaged.",
+    "Q7": "Use summer_jun_aug, winter_dec_feb and summer_minus_winter; list the months used from the history. If a "
+          "season is missing or incomplete, say so.",
+    "Q8": "Use payment_record: months shown, months with payment, unpaid or underpaid months, credit months. If the "
+          "bill shows fewer than 12 months of payments (e.g. K-Electric shows 3), say only those months can be checked.",
+    "Q9": "Use last_3_months_incl_current (and last_3_previous_months) with the monthly values and direction.",
+    "Q10": "This is an ESTIMATE: give next_month_forecast.linear_trend_units as the trend estimate and also the "
+           "same_month_last_year_units as a seasonal reference; state the method briefly.",
+    "Q11": "ESTIMATE: use monthly_set_aside_from_billing_history_pkr when billing history has many months; otherwise "
+           "estimate_annual_cost_pkr / 12. State the method and that it is an estimate.",
+    "Q12": "ESTIMATE: use estimate_bill_if_same_units_as_last_month (state method; slabs and adjustments may differ). "
+           "Mention last month's units. For net-metered/credit bills explain the limitation.",
+}
 
 L2_RULES = """ANSWER RULES
 1. Use ONLY the bill image and the data below. No outside tariff, rate or policy information.
@@ -218,7 +246,9 @@ L2_RULES = """ANSWER RULES
 4. Label every estimate as an estimate and state how it was calculated in one short clause.
 5. If a question has more than one reasonable meaning, say which meaning you used, or answer both briefly.
 6. Never mention names, addresses, CNIC, account, reference, consumer or meter numbers.
-7. Write in plain, friendly English (translate any Urdu). 1-4 sentences, specific, no filler, no markdown."""
+7. Negative units or amounts usually mean net-metering export or a credit; explain that instead of treating them
+   as normal consumption or charges.
+8. Write in plain, friendly English (translate any Urdu). 1-4 sentences, specific, no filler, no markdown."""
 
 SAMPLE_QA = [
     {"question": "How much of my bill is taxes?",

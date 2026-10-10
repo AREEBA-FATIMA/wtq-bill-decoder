@@ -99,6 +99,34 @@ def _lines(raw_lines, allowed: list[str], default: str, force_negative: str | No
     return out
 
 
+def _fix_itemised_total_fpa(out: dict, raw: dict) -> None:
+    """Itemised LESCO layout: right-column 'Total FPA' = FPA line + GST/ED on FPA. It is not a separate charge.
+
+    If dropping it makes the charges match the printed TOTAL, drop it; the FPA line itself is then the entry whose
+    amount equals Total FPA minus the 'on FPA' tax lines (relabel it fpa if the model attached the wrong label).
+    """
+    tc, charges = out.get("total_charges"), out.get("charges") or []
+    raw_charges = [c for c in raw.get("charges") or [] if isinstance(c, dict)]
+    if tc is None or not out.get("taxes"):
+        return
+    for i, rc in enumerate(raw_charges):
+        if "TOTAL" not in str(rc.get("label", "")).upper() or "FPA" not in str(rc.get("label", "")).upper():
+            continue
+        total_fpa = to_number(rc.get("amount"))
+        if total_fpa is None or abs(sum(c["amount"] for c in charges) - total_fpa - tc) > 1:
+            return
+        out["charges"] = [c for c in charges if not (c["type"] == "fpa" and abs(c["amount"] - total_fpa) < 0.01)]
+        on_fpa = sum(to_number(t.get("amount")) or 0 for t in raw.get("taxes") or []
+                     if isinstance(t, dict) and "FPA" in str(t.get("label", "")).upper())
+        fpa_line = round(total_fpa - on_fpa, 2)
+        if not any(c["type"] == "fpa" for c in out["charges"]):
+            for c in out["charges"]:
+                if abs(c["amount"] - fpa_line) < 0.01:
+                    c["type"] = "fpa"
+                    break
+        return
+
+
 def normalize_l1(raw: dict, bill_id: str) -> dict:
     """Map raw model output (strings as printed) to the final Level 1 dict in guide key order."""
     out: dict = {}
@@ -120,6 +148,14 @@ def normalize_l1(raw: dict, bill_id: str) -> dict:
             out[field] = to_number(val)
         else:
             out[field] = val
+
+    # Column-shift misread (e.g. handwriting over the Taxes cell): the model copied Current Bill into total_taxes.
+    # Printed layout guarantees Net Electricity Charges + Taxes = Current Bill, so recover the printed Taxes figure.
+    tc_, tt_, cb_ = out.get("total_charges"), out.get("total_taxes"), out.get("current_bill")
+    if None not in (tc_, tt_, cb_) and not out["taxes"] and tt_ == cb_ and 0 < tc_ < cb_:
+        out["total_taxes"] = round(cb_ - tc_, 2)
+
+    _fix_itemised_total_fpa(out, raw)
 
     # A combined "Taxes" figure belongs in total_taxes, never in charges (LESCO/IESCO layout).
     tt = out.get("total_taxes")

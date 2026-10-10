@@ -39,6 +39,9 @@ All commands from inside `source/`. Folder layout assumed: `../train/bills`, `..
 # Training bills (no templates; uses the guide's sample questions, prints gold check for KESC_0008)
 python -m decoder run --bills ../train/bills --out ../output_train
 
+# Create the CSV templates (guide format) if they were not provided — questions from examples/questions.txt
+python -m decoder templates --bills ../test/bills --out ../test/csv
+
 # Test bills: fills the provided templates → ../output/level1.csv and ../output/level2.csv
 python -m decoder run --bills ../test/bills --csv ../test/csv --out ../output
 

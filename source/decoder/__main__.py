@@ -124,6 +124,19 @@ def cmd_show(args) -> int:
     return 0
 
 
+def cmd_templates(args) -> int:
+    """Create level1.csv / level2.csv templates (guide section 4.2 format) from a bills folder + questions file."""
+    bill_ids = sorted(p.stem for p in list_bills(Path(args.bills)))
+    questions = [q.strip() for q in Path(args.questions).read_text(encoding="utf-8").splitlines() if q.strip()]
+    out = Path(args.out)
+    write_csv(out / "level1.csv", L1_COLUMNS, [{"bill_id": b, "json": ""} for b in bill_ids])
+    write_csv(out / "level2.csv", L2_COLUMNS,
+              [{"bill_id": b, "question_id": f"Q{i}", "question": q, "answer": ""}
+               for b in bill_ids for i, q in enumerate(questions, start=1)])
+    print(f"Wrote {out}/level1.csv ({len(bill_ids)} rows) and {out}/level2.csv ({len(bill_ids) * len(questions)} rows)")
+    return 0
+
+
 def cmd_validate(args) -> int:
     problems = validate_outputs(Path(args.csv) if args.csv else None, Path(args.out))
     if problems:
@@ -163,6 +176,11 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--bill", required=True)
     s.add_argument("--question", action="append", help="question to ask (repeatable)")
 
+    t = sub.add_parser("templates", help="create level1/level2 CSV templates from a bills folder")
+    t.add_argument("--bills", required=True)
+    t.add_argument("--questions", default=str(Path(__file__).resolve().parent.parent / "examples" / "questions.txt"))
+    t.add_argument("--out", required=True, help="folder to write the templates to (e.g. ../test/csv)")
+
     v = sub.add_parser("validate", help="check output CSVs against the templates")
     v.add_argument("--out", required=True)
     v.add_argument("--csv", help="template folder")
@@ -178,7 +196,7 @@ def main(argv: list[str] | None = None) -> int:
     for noisy in ("httpx", "httpcore", "google_genai", "anthropic"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
     try:
-        return {"ping": cmd_ping, "run": cmd_run, "show": cmd_show, "validate": cmd_validate,
+        return {"ping": cmd_ping, "run": cmd_run, "show": cmd_show, "validate": cmd_validate, "templates": cmd_templates,
                 "package": cmd_package}[args.cmd](args)
     except ConfigError as exc:
         print(f"Config error: {exc}", file=sys.stderr)

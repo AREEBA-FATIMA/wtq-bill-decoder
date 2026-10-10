@@ -1,0 +1,604 @@
+{
+  "bill_id": "LESCO_0002",
+  "l1": {
+    "provider": "LESCO",
+    "tariff": "A-1A(01)",
+    "sanctioned_load_kw": 5,
+    "bill_month": "2026-09",
+    "reading_date": "2026-09-15",
+    "issue_date": "2026-09-18",
+    "due_date": "2026-09-28",
+    "previous_reading": 42159,
+    "current_reading": 42576,
+    "units_consumed": 417,
+    "charges": [
+      {
+        "type": "energy",
+        "amount": 19733
+      },
+      {
+        "type": "fpa",
+        "amount": 806
+      }
+    ],
+    "total_charges": 19733,
+    "taxes": [],
+    "total_taxes": 3833,
+    "current_bill": 23566,
+    "arrears": 0,
+    "payable_within_due_date": 24372,
+    "payable_after_due_date": 26345
+  },
+  "issues": [],
+  "raw_l1": {
+    "tariff": "A-1A(01)",
+    "sanctioned_load_kw": "5",
+    "bill_month": "2026-09",
+    "reading_date": "2026-09-15",
+    "issue_date": "2026-09-18",
+    "due_date": "2026-09-28",
+    "previous_reading": "42159",
+    "current_reading": "42576",
+    "units_consumed": "417",
+    "charges": [
+      {
+        "label": "Total Electricity Charges",
+        "type": "energy",
+        "amount": "19733"
+      },
+      {
+        "label": "Total FPA",
+        "type": "fpa",
+        "amount": "806"
+      }
+    ],
+    "total_charges": "19733",
+    "taxes": [],
+    "total_taxes": "3833",
+    "current_bill": "23566",
+    "arrears": "0",
+    "payable_within_due_date": "24372",
+    "late_payment_amounts": [
+      "25359",
+      "26345"
+    ],
+    "payable_after_due_date": "26345",
+    "notes": "Taxes printed as one combined figure."
+  },
+  "facts": {
+    "usage_history": [
+      {
+        "month": "2025-09",
+        "units": 30
+      },
+      {
+        "month": "2025-10",
+        "units": 829
+      },
+      {
+        "month": "2025-11",
+        "units": 239
+      },
+      {
+        "month": "2025-12",
+        "units": 123
+      },
+      {
+        "month": "2026-01",
+        "units": 96
+      },
+      {
+        "month": "2026-02",
+        "units": 73
+      },
+      {
+        "month": "2026-03",
+        "units": 78
+      },
+      {
+        "month": "2026-04",
+        "units": 128
+      },
+      {
+        "month": "2026-05",
+        "units": 201
+      },
+      {
+        "month": "2026-06",
+        "units": 245
+      },
+      {
+        "month": "2026-07",
+        "units": 327
+      },
+      {
+        "month": "2026-08",
+        "units": 426
+      }
+    ],
+    "usage_history_includes_current_month": "false",
+    "billing_history": [
+      {
+        "month": "2025-09",
+        "billed_amount": -377,
+        "payment_date": null,
+        "payment": 30000
+      },
+      {
+        "month": "2025-10",
+        "billed_amount": 19504,
+        "payment_date": null,
+        "payment": 20479
+      },
+      {
+        "month": "2025-11",
+        "billed_amount": 10054,
+        "payment_date": null,
+        "payment": 10054
+      },
+      {
+        "month": "2025-12",
+        "billed_amount": 3873,
+        "payment_date": null,
+        "payment": 3873
+      },
+      {
+        "month": "2026-01",
+        "billed_amount": 2717,
+        "payment_date": null,
+        "payment": 2717
+      },
+      {
+        "month": "2026-02",
+        "billed_amount": 2415,
+        "payment_date": null,
+        "payment": 2415
+      },
+      {
+        "month": "2026-03",
+        "billed_amount": 4235,
+        "payment_date": null,
+        "payment": 4235
+      },
+      {
+        "month": "2026-04",
+        "billed_amount": 6868,
+        "payment_date": null,
+        "payment": 6868
+      },
+      {
+        "month": "2026-05",
+        "billed_amount": 10883,
+        "payment_date": null,
+        "payment": 10883
+      },
+      {
+        "month": "2026-06",
+        "billed_amount": 12688,
+        "payment_date": null,
+        "payment": 12688
+      },
+      {
+        "month": "2026-07",
+        "billed_amount": 17189,
+        "payment_date": null,
+        "payment": 17189
+      },
+      {
+        "month": "2026-08",
+        "billed_amount": 23655,
+        "payment_date": null,
+        "payment": 23655
+      }
+    ],
+    "rate_lines": [],
+    "late_payment_tiers": [
+      {
+        "label": "Till 01-CT",
+        "surcharge": null,
+        "amount_payable": 25359
+      },
+      {
+        "label": "After 01-CT",
+        "surcharge": 987,
+        "amount_payable": 26345
+      }
+    ],
+    "printed_percent_split": {
+      "energy_charges_pct": 83.74,
+      "taxes_pct": 16.26
+    },
+    "mdi_kw": null,
+    "number_of_months_billed": null,
+    "connection_or_installation_date": null,
+    "meter_or_reading_status": "EX",
+    "protected_or_unprotected_status": "Unprotected",
+    "other_printed_amounts": [
+      {
+        "label": "Total Electricity Charges",
+        "amount": 19733
+      },
+      {
+        "label": "Taxes",
+        "amount": 3833
+      },
+      {
+        "label": "Current Bill",
+        "amount": 23566
+      },
+      {
+        "label": "Total FPA",
+        "amount": 806
+      },
+      {
+        "label": "Grand Total",
+        "amount": 24372
+      }
+    ],
+    "messages_in_english": [
+      "Say No To Corruption",
+      "The price of fuel adjustment (FPA) of 806 rupees is included in this bill for July 2026",
+      "Minister of Energy Efficiency Program"
+    ]
+  },
+  "stats": {
+    "charges_by_type_pkr": {
+      "energy": 19733,
+      "fpa": 806
+    },
+    "taxes_by_type_pkr": {},
+    "taxes_share_of_current_bill_pct": 16.26,
+    "charges_share_of_current_bill_pct": 83.74,
+    "energy_charges_pkr": 19733,
+    "energy_share_of_charges_pct": 100.0,
+    "fixed_share_of_current_bill_pct": null,
+    "adjustments_fpa_plus_qta_pkr": 806,
+    "average_cost_per_unit_current_bill_pkr": 56.51,
+    "average_cost_per_unit_charges_only_pkr": 47.32,
+    "energy_cost_per_unit_pkr": 47.32,
+    "taxes_per_unit_pkr": 9.19,
+    "reading_difference": 417,
+    "late_payment_extra_pkr_max": 1973,
+    "late_payment_extra_pct_max": 8.1,
+    "late_payment_tiers_vs_on_time": [
+      {
+        "label": "Till 01-CT",
+        "amount_payable": 25359,
+        "extra_vs_on_time_pkr": 987
+      },
+      {
+        "label": "After 01-CT",
+        "amount_payable": 26345,
+        "extra_vs_on_time_pkr": 1973
+      }
+    ],
+    "arrears_is_credit": false,
+    "history_previous_months": [
+      "September 2025: 30",
+      "October 2025: 829",
+      "November 2025: 239",
+      "December 2025: 123",
+      "January 2026: 96",
+      "February 2026: 73",
+      "March 2026: 78",
+      "April 2026: 128",
+      "May 2026: 201",
+      "June 2026: 245",
+      "July 2026: 327",
+      "August 2026: 426"
+    ],
+    "history_excl_current_months": 12,
+    "history_excl_current_total_units": 2795,
+    "history_excl_current_average_units": 232.92,
+    "history_excl_current_highest": {
+      "month": "October 2025",
+      "units": 829
+    },
+    "history_excl_current_lowest": {
+      "month": "September 2025",
+      "units": 30
+    },
+    "history_excl_current_months_above_100": {
+      "count": 8,
+      "months": [
+        "October 2025 (829)",
+        "November 2025 (239)",
+        "December 2025 (123)",
+        "April 2026 (128)",
+        "May 2026 (201)",
+        "June 2026 (245)",
+        "July 2026 (327)",
+        "August 2026 (426)"
+      ]
+    },
+    "history_excl_current_months_above_200": {
+      "count": 6,
+      "months": [
+        "October 2025 (829)",
+        "November 2025 (239)",
+        "May 2026 (201)",
+        "June 2026 (245)",
+        "July 2026 (327)",
+        "August 2026 (426)"
+      ]
+    },
+    "history_excl_current_months_above_300": {
+      "count": 3,
+      "months": [
+        "October 2025 (829)",
+        "July 2026 (327)",
+        "August 2026 (426)"
+      ]
+    },
+    "history_incl_current_months": 13,
+    "history_incl_current_total_units": 3212,
+    "history_incl_current_average_units": 247.08,
+    "history_incl_current_highest": {
+      "month": "October 2025",
+      "units": 829
+    },
+    "history_incl_current_lowest": {
+      "month": "September 2025",
+      "units": 30
+    },
+    "history_incl_current_months_above_100": {
+      "count": 9,
+      "months": [
+        "October 2025 (829)",
+        "November 2025 (239)",
+        "December 2025 (123)",
+        "April 2026 (128)",
+        "May 2026 (201)",
+        "June 2026 (245)",
+        "July 2026 (327)",
+        "August 2026 (426)",
+        "September 2026 (417)"
+      ]
+    },
+    "history_incl_current_months_above_200": {
+      "count": 7,
+      "months": [
+        "October 2025 (829)",
+        "November 2025 (239)",
+        "May 2026 (201)",
+        "June 2026 (245)",
+        "July 2026 (327)",
+        "August 2026 (426)",
+        "September 2026 (417)"
+      ]
+    },
+    "history_incl_current_months_above_300": {
+      "count": 4,
+      "months": [
+        "October 2025 (829)",
+        "July 2026 (327)",
+        "August 2026 (426)",
+        "September 2026 (417)"
+      ]
+    },
+    "change_vs_previous_month": {
+      "previous_month": "August 2026",
+      "previous_units": 426,
+      "difference_units": -9,
+      "change_pct": -2.11
+    },
+    "current_vs_history_average": {
+      "average_units": 232.92,
+      "difference_units": 184.08,
+      "change_pct": 79.03
+    },
+    "change_vs_same_month_last_year": {
+      "month": "September 2025",
+      "units": 30,
+      "difference_units": 387,
+      "change_pct": 1290.0
+    },
+    "average_last_3_previous_months": 332.67,
+    "last_12_months_incl_current": {
+      "months": [
+        "October 2025: 829",
+        "November 2025: 239",
+        "December 2025: 123",
+        "January 2026: 96",
+        "February 2026: 73",
+        "March 2026: 78",
+        "April 2026: 128",
+        "May 2026: 201",
+        "June 2026: 245",
+        "July 2026: 327",
+        "August 2026: 426",
+        "September 2026: 417"
+      ],
+      "highest": "October 2025 (829 units)",
+      "average_units": 265.17
+    },
+    "summer_jun_aug": {
+      "months": [
+        "June 2026: 245",
+        "July 2026: 327",
+        "August 2026: 426"
+      ],
+      "total_units": 998,
+      "average_units": 332.67
+    },
+    "winter_dec_feb": {
+      "months": [
+        "December 2025: 123",
+        "January 2026: 96",
+        "February 2026: 73"
+      ],
+      "total_units": 292,
+      "average_units": 97.33
+    },
+    "summer_minus_winter": {
+      "average_per_month_units": 235.34,
+      "total_units": 706
+    },
+    "last_3_months_incl_current": {
+      "months": [
+        "July 2026: 327",
+        "August 2026: 426",
+        "September 2026: 417"
+      ],
+      "direction": "mixed",
+      "change_first_to_last_units": 90
+    },
+    "last_3_previous_months": {
+      "months": [
+        "June 2026: 245",
+        "July 2026: 327",
+        "August 2026: 426"
+      ],
+      "direction": "rising",
+      "change_first_to_last_units": 181
+    },
+    "next_month_forecast": {
+      "method_linear_trend": "least-squares line over the last 12 months (incl. current), next point",
+      "linear_trend_units": 259.67,
+      "slope_units_per_month": -0.85,
+      "average_last_12_units": 265.17,
+      "next_month": "October 2026",
+      "same_month_last_year_units": 829
+    },
+    "estimate_next_bill_if_usage_equals_average_pkr": {
+      "method": "history average units (incl. current) x current average cost per unit",
+      "average_units": 247.08,
+      "cost_per_unit": 56.51,
+      "estimate_pkr": 13963.1
+    },
+    "estimate_annual_cost_pkr": {
+      "method": "sum of units over months shown (incl. current) x current cost per unit, scaled to 12 months",
+      "estimate_pkr": 167557.26
+    },
+    "estimate_bill_if_same_units_as_last_month": {
+      "method": "fixed charges + (current bill - fixed charges) / current units x last month's units",
+      "last_month": "August 2026",
+      "last_month_units": 426,
+      "estimate_pkr": 24074.62,
+      "simple_cost_per_unit_estimate_pkr": 24074.62
+    },
+    "billing_history_rows": [
+      {
+        "month": "2026-08",
+        "billed": 23655,
+        "paid": 23655,
+        "pay_date": null
+      },
+      {
+        "month": "2026-07",
+        "billed": 17189,
+        "paid": 17189,
+        "pay_date": null
+      },
+      {
+        "month": "2026-06",
+        "billed": 12688,
+        "paid": 12688,
+        "pay_date": null
+      },
+      {
+        "month": "2026-05",
+        "billed": 10883,
+        "paid": 10883,
+        "pay_date": null
+      },
+      {
+        "month": "2026-04",
+        "billed": 6868,
+        "paid": 6868,
+        "pay_date": null
+      },
+      {
+        "month": "2026-03",
+        "billed": 4235,
+        "paid": 4235,
+        "pay_date": null
+      },
+      {
+        "month": "2026-02",
+        "billed": 2415,
+        "paid": 2415,
+        "pay_date": null
+      },
+      {
+        "month": "2026-01",
+        "billed": 2717,
+        "paid": 2717,
+        "pay_date": null
+      },
+      {
+        "month": "2025-12",
+        "billed": 3873,
+        "paid": 3873,
+        "pay_date": null
+      },
+      {
+        "month": "2025-11",
+        "billed": 10054,
+        "paid": 10054,
+        "pay_date": null
+      },
+      {
+        "month": "2025-10",
+        "billed": 19504,
+        "paid": 20479,
+        "pay_date": null
+      },
+      {
+        "month": "2025-09",
+        "billed": -377,
+        "paid": 30000,
+        "pay_date": null
+      }
+    ],
+    "billing_history_average_billed_pkr": 9475.33,
+    "billing_history_total_billed_pkr": 113704,
+    "payment_record": {
+      "months_shown": 12,
+      "months_with_payment": 12,
+      "positive_bills_with_no_payment_shown": [],
+      "paid_less_than_billed": [],
+      "credit_or_negative_bills": [
+        "September 2025"
+      ]
+    },
+    "monthly_set_aside_from_billing_history_pkr": {
+      "method": "average of billed amounts shown in billing history",
+      "months_used": 12,
+      "estimate_pkr": 9475.33,
+      "average_of_positive_bills_pkr": 10371
+    },
+    "current_bill_vs_last_billed_pkr": -89,
+    "printed_percent_split": {
+      "energy_charges_pct": 83.74,
+      "taxes_pct": 16.26
+    },
+    "printed_charge_lines": [
+      {
+        "label": "Total Electricity Charges",
+        "type": "energy",
+        "amount": "19733"
+      },
+      {
+        "label": "Total FPA",
+        "type": "fpa",
+        "amount": "806"
+      }
+    ]
+  },
+  "answers": {
+    "Q1": "This is a standard connection. There is no mention of 'Net Metering', no separate import/export meter readings, and no negative units or credit-based billing indicators.",
+    "Q2": "In the last 12 months (including the current month), October 2025 had the highest consumption at 829 units.",
+    "Q3": "You are being charged PKR 806 for Fuel Price Adjustment (FPA), which relates to your consumption in July 2026.",
+    "Q4": "If you pay after the due date but before the 'Till 01-CT' deadline, you will pay PKR 25,359 (an extra PKR 987). If you pay after that, the total payable increases to PKR 26,345 (an extra PKR 1,973).",
+    "Q5": "Yes, your consumption is significantly higher than in the same month last year. You consumed 417 units this September, compared to 30 units in September 2025, which is an increase of 1,290%.",
+    "Q6": "Your average monthly consumption over the previous 12 months was 232.92 units. This month's consumption of 417 units is 79.03% higher than that average.",
+    "Q7": "You consume 706 more units in summer (June-August, total 998 units) than in winter (December-February, total 292 units).",
+    "Q8": "Yes, you have paid every bill shown in the 12-month history. September 2025 shows a negative billed amount, which indicates a credit on your account rather than an unpaid bill.",
+    "Q9": "Your consumption over the last 3 months (July, August, September) has been mixed, moving from 327 to 426 and then to 417 units, resulting in a net increase of 90 units from the start of that period.",
+    "Q10": "Based on a linear trend of the last 12 months, you can expect to consume approximately 259.67 units next month. For seasonal reference, you consumed 829 units in October 2025.",
+    "Q11": "To spread your costs evenly, you should set aside approximately PKR 9,475.33 each month; this is an estimate based on the average of your billed amounts over the last 12 months.",
+    "Q12": "If you consume the same 426 units as you did last month (August 2026), your bill would be approximately PKR 24,074.62. This is an estimate calculated by applying your current average cost per unit to last month's usage."
+  },
+  "errors": []
+}

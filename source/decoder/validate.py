@@ -40,7 +40,11 @@ def check_l1(rec: dict) -> list[str]:
             )
 
     tc, tt, cb = rec.get("total_charges"), rec.get("total_taxes"), rec.get("current_bill")
-    if None not in (tc, tt, cb) and not _close(tc + tt, cb, 2):
+    within_ = rec.get("payable_within_due_date")
+    arrears_ = rec.get("arrears") or 0
+    # Some LESCO layouts exclude FPA from Current Bill; then charges + taxes = payable within due date - arrears.
+    fpa_layout = within_ is not None and None not in (tc, tt) and _close(tc + tt, within_ - arrears_, 2)
+    if None not in (tc, tt, cb) and not _close(tc + tt, cb, 2) and not fpa_layout:
         issues.append(
             f"total_charges ({tc}) + total_taxes ({tt}) = {round(tc + tt, 2)} but current_bill is {cb}. "
             "Check these three values (some bills add other items, then keep printed values)."

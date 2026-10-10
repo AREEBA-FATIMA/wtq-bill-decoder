@@ -96,6 +96,39 @@ class WapdaTests(unittest.TestCase):
         self.assertEqual(rec["arrears"], 39411)
 
 
+class TestBillFixes(unittest.TestCase):
+    def test_tax_cell_copied_from_current_bill(self):
+        raw = {"charges": [{"type": "energy", "amount": "29807"}], "total_charges": "29807", "taxes": [],
+               "total_taxes": "38323", "current_bill": "38323"}
+        self.assertEqual(normalize_l1(raw, "IESCO_0002")["total_taxes"], 8516)
+
+    def test_lesco_fpa_outside_current_bill_ok(self):
+        rec = {"total_charges": 1601.56, "total_taxes": 308.44, "current_bill": 1678.5, "arrears": None,
+               "payable_within_due_date": 1910, "payable_after_due_date": 2051, "due_date": "2026-04-29",
+               "charges": [{"type": "energy", "amount": 1601.56}], "taxes": [{"type": "gst", "amount": 308.44}]}
+        self.assertEqual(check_l1(rec), [])
+
+
+class ItemisedLescoTests(unittest.TestCase):
+    def test_total_fpa_not_double_counted(self):
+        raw = {"charges": [{"label": "COST OF ELECTRICITY", "type": "energy", "amount": "938.5"},
+                           {"label": "METER RENT", "type": "meter_rent", "amount": "193.60"},
+                           {"label": "F.C SURCHARGE", "type": "surcharge", "amount": "38.27"},
+                           {"label": "QUARTERLY TARIFF ADJUSTMENT", "type": "quarterly_adjustment", "amount": "31.19"},
+                           {"label": "FIXED CHARGES", "type": "fixed", "amount": "400"},
+                           {"label": "TOTAL FPA", "type": "fpa", "amount": "231.5"}],
+               "total_charges": "1601.56",
+               "taxes": [{"label": "ELECTRICITY DUTY", "type": "electricity_duty", "amount": "14.54"},
+                         {"label": "GST", "type": "gst", "amount": "256"},
+                         {"label": "GST ON FPA", "type": "gst", "amount": "35"},
+                         {"label": "ED ON FPA", "type": "electricity_duty", "amount": "2.90"}],
+               "total_taxes": "308.44"}
+        rec = normalize_l1(raw, "LESCO_0008")
+        self.assertEqual([c["type"] for c in rec["charges"]],
+                         ["energy", "fpa", "surcharge", "quarterly_adjustment", "fixed"])
+        self.assertAlmostEqual(sum(c["amount"] for c in rec["charges"]), 1601.56, places=2)
+
+
 class ValidateTests(unittest.TestCase):
     def test_detects_sum_mismatch(self):
         rec = dict(GOLD, total_charges=2000)

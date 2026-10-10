@@ -145,6 +145,59 @@ def compute_stats(l1: dict, facts: dict) -> dict:
         recent3 = previous_only[-3:]
         stats["average_last_3_previous_months"] = _r(mean(h["units"] for h in recent3))
 
+    # --- extra series views for the official questions
+    def label(series):
+        return [f"{month_label(h['month'])}: {h['units']}" for h in series]
+
+    last12 = with_current[-12:]
+    if last12:
+        hi12 = max(last12, key=lambda h: h["units"])
+        stats["last_12_months_incl_current"] = {
+            "months": label(last12), "highest": f"{month_label(hi12['month'])} ({hi12['units']} units)",
+            "average_units": _r(mean(h["units"] for h in last12)),
+        }
+
+    def season(months: set[int]):
+        pts = [h for h in with_current if h["month"] and int(h["month"][5:7]) in months]
+        return {"months": label(pts), "total_units": _r(sum(h["units"] for h in pts)) if pts else None,
+                "average_units": _r(mean(h["units"] for h in pts)) if pts else None}
+
+    summer, winter = season({6, 7, 8}), season({12, 1, 2})
+    stats["summer_jun_aug"], stats["winter_dec_feb"] = summer, winter
+    if summer["average_units"] is not None and winter["average_units"] is not None:
+        stats["summer_minus_winter"] = {
+            "average_per_month_units": _r(summer["average_units"] - winter["average_units"]),
+            "total_units": _r(summer["total_units"] - winter["total_units"]),
+        }
+
+    def trend(series):
+        if len(series) < 2:
+            return None
+        u = [h["units"] for h in series]
+        direction = ("rising" if all(b > a for a, b in zip(u, u[1:])) else
+                     "falling" if all(b < a for a, b in zip(u, u[1:])) else "mixed")
+        return {"months": label(series), "direction": direction, "change_first_to_last_units": _r(u[-1] - u[0])}
+
+    stats["last_3_months_incl_current"] = trend(with_current[-3:])
+    stats["last_3_previous_months"] = trend(previous_only[-3:])
+
+    if len(last12) >= 3:
+        n = len(last12)
+        xs, ys = list(range(n)), [h["units"] for h in last12]
+        xm, ym = mean(xs), mean(ys)
+        slope = sum((x - xm) * (y - ym) for x, y in zip(xs, ys)) / sum((x - xm) ** 2 for x in xs)
+        forecast = {"method_linear_trend": "least-squares line over the last 12 months (incl. current), next point",
+                    "linear_trend_units": _r(ym + slope * (n - xm)), "slope_units_per_month": _r(slope),
+                    "average_last_12_units": _r(ym)}
+        if current_month:
+            y, m = map(int, current_month.split("-"))
+            nxt = f"{y + (m == 12):04d}-{m % 12 + 1:02d}"
+            ly = f"{int(nxt[:4]) - 1:04d}-{nxt[5:]}"
+            match = [h for h in with_current if h["month"] == ly]
+            forecast["next_month"] = month_label(nxt)
+            forecast["same_month_last_year_units"] = match[0]["units"] if match else None
+        stats["next_month_forecast"] = forecast
+
     # --- simple estimates (labelled as estimates by the answer prompt)
     if units and cb is not None and with_current:
         avg_all = mean(h["units"] for h in with_current)
@@ -156,6 +209,17 @@ def compute_stats(l1: dict, facts: dict) -> dict:
         stats["estimate_annual_cost_pkr"] = {
             "method": "sum of units over months shown (incl. current) x current cost per unit, scaled to 12 months",
             "estimate_pkr": _r(sum(h["units"] for h in with_current) * cpu * 12 / len(with_current)),
+        }
+
+    if units and cb is not None and previous_only:
+        fixed = by_type.get("fixed") or 0
+        var_rate = (cb - fixed) / units
+        last = previous_only[-1]
+        stats["estimate_bill_if_same_units_as_last_month"] = {
+            "method": "fixed charges + (current bill - fixed charges) / current units x last month's units",
+            "last_month": month_label(last["month"]), "last_month_units": last["units"],
+            "estimate_pkr": _r(fixed + var_rate * last["units"]),
+            "simple_cost_per_unit_estimate_pkr": _r(cb / units * last["units"]),
         }
 
     # --- billing history
@@ -170,6 +234,21 @@ def compute_stats(l1: dict, facts: dict) -> dict:
         if billed:
             stats["billing_history_average_billed_pkr"] = _r(mean(billed))
             stats["billing_history_total_billed_pkr"] = _r(sum(billed))
+        paid = [b for b in bills if b["paid"] not in (None, 0)]
+        unpaid = [b for b in bills if b["paid"] in (None, 0) and (b["billed"] or 0) > 0]
+        under = [b for b in bills if b["paid"] and b["billed"] and b["paid"] < b["billed"] - 1]
+        stats["payment_record"] = {
+            "months_shown": len(bills), "months_with_payment": len(paid),
+            "positive_bills_with_no_payment_shown": [f"{month_label(b['month'])} (billed {b['billed']})" for b in unpaid],
+            "paid_less_than_billed": [f"{month_label(b['month'])} (billed {b['billed']}, paid {b['paid']})" for b in under],
+            "credit_or_negative_bills": [month_label(b["month"]) for b in bills if (b["billed"] or 0) < 0],
+        }
+        if billed:
+            pos = [b for b in billed if b > 0]
+            stats["monthly_set_aside_from_billing_history_pkr"] = {
+                "method": "average of billed amounts shown in billing history", "months_used": len(billed),
+                "estimate_pkr": _r(mean(billed)), "average_of_positive_bills_pkr": _r(mean(pos)) if pos else None,
+            }
         if cb is not None and bills[0]["billed"] is not None:
             stats["current_bill_vs_last_billed_pkr"] = _r(cb - bills[0]["billed"])
 

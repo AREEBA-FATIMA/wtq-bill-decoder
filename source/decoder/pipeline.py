@@ -112,6 +112,10 @@ class BillDecoder:
                 res.errors.append(f"facts: {exc}")
             try:
                 res.stats = compute_stats(res.l1, res.facts)
+                res.stats["printed_charge_lines"] = [
+                    {"label": c.get("label"), "type": c.get("type"), "amount": c.get("amount")}
+                    for c in (res.raw_l1 or {}).get("charges") or [] if isinstance(c, dict)
+                ]
             except Exception as exc:
                 log.warning("%s: stats failed: %s", bill_id, exc)
                 res.errors.append(f"stats: {exc}")
