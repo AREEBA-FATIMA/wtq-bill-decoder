@@ -8,7 +8,7 @@
 | SDKs | `google-genai`, `anthropic` |
 | Validation | own deterministic checks (`validate.py`) |
 | Images | `Pillow` — EXIF auto-rotate, resize to ≤ 2000 px long side, PNG |
-| Reliability | `tenacity` retries, SHA-256 disk cache in `.cache/` |
+| Reliability | own retry loop (8 attempts, backoff, fallback model on 503/429), SHA-256 disk cache in `.cache/` |
 | Config | `python-dotenv` |
 | CLI | `argparse` → `python -m decoder ...` |
 

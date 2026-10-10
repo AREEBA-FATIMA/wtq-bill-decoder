@@ -81,6 +81,8 @@ from the images). Every `run` prints a per-bill score: currently **18/18 fields 
 | `MIN_INTERVAL_SEC` | min seconds between calls (rate limit) | 4.5 for google, 0 otherwise |
 | `MAX_IMAGE_SIDE` | long side in px sent to the model | 2000 |
 | `CACHE_DIR` | response cache | `.cache` |
+| `FALLBACK_MODEL` | allowed model used when the main one is overloaded | the other Gemini Flash-Lite |
+| `MAX_ATTEMPTS` | attempts per call | 8 |
 | `FEWSHOT_IMAGE` | optional path to `KESC_0008.png` to send as a visual worked example | empty |
 
 The code refuses any model not on the competition's allowed list.
@@ -110,13 +112,15 @@ source/
 ```
 
 ## Error handling
-- Retries with exponential backoff on API/JSON errors; pacing for rate limits.
+- Up to 8 attempts with exponential backoff on API/JSON errors; on overload/quota errors (503/429) calls alternate
+  with a fallback allowed model (`FALLBACK_MODEL`, default: the other Gemini Flash-Lite); pacing for rate limits.
+  Successful replies are cached, so re-running the same command only redoes bills that failed.
 - A failing bill never stops the run: Level 1 falls back to an all-null record of the right shape,
   Level 2 to an explicit "could not read" answer, so no CSV cell is empty.
 - Config errors (missing key, disallowed model) stop early with a clear message.
 
 ## AI usage
-- **LLM used by the solution:** Gemini 3.1 Flash-Lite (`gemini-3.1-flash-lite`) via Google AI Studio.
+- **LLM used by the solution:** Gemini 3.1 Flash-Lite (`gemini-3.1-flash-lite`) via Google AI Studio, with Gemini 3.5 Flash-Lite (`gemini-3.5-flash-lite`) as automatic fallback when 3.1 is overloaded. Both are on the allowed list.
   *(Change this line if you run with `claude-haiku-4-5` — it must match `.env.example`.)*
 - **APIs:** Google Gen AI API (`google-genai` SDK). Anthropic Messages API supported in code (`anthropic` SDK) but only used if `MODEL_PROVIDER=anthropic`.
 - **OCR / document services:** none.

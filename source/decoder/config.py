@@ -34,6 +34,8 @@ class Settings:
     min_interval_sec: float
     max_image_side: int
     fewshot_image: Path | None
+    fallback_model: str | None
+    max_attempts: int
 
 
 def load_settings(require_key: bool = True) -> Settings:
@@ -52,6 +54,12 @@ def load_settings(require_key: bool = True) -> Settings:
     if require_key and (not api_key or api_key == "your-api-key-here"):
         raise ConfigError("API_KEY is not set. Copy .env.example to .env and add your key.")
 
+    fallback = os.getenv("FALLBACK_MODEL", "").strip()
+    if not fallback and provider == "google":
+        fallback = next(m for m in sorted(ALLOWED_MODELS["google"]) if m != model)
+    if fallback and fallback not in ALLOWED_MODELS[provider]:
+        raise ConfigError(f"FALLBACK_MODEL {fallback!r} is not an allowed {provider} model")
+
     default_interval = "4.5" if provider == "google" else "0"
     fewshot = os.getenv("FEWSHOT_IMAGE", "").strip()
     return Settings(
@@ -62,4 +70,6 @@ def load_settings(require_key: bool = True) -> Settings:
         min_interval_sec=float(os.getenv("MIN_INTERVAL_SEC", default_interval)),
         max_image_side=int(os.getenv("MAX_IMAGE_SIDE", "2000")),
         fewshot_image=Path(fewshot) if fewshot else None,
+        fallback_model=fallback if fallback and fallback != model else None,
+        max_attempts=int(os.getenv("MAX_ATTEMPTS", "8")),
     )

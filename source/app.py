@@ -69,7 +69,7 @@ with tab_one:
 
         col_img, col_res = st.columns([1, 1.6], gap="large")
         with col_img:
-            st.image(up.getvalue(), caption=up.name, use_container_width=True)
+            st.image(up.getvalue(), caption=up.name, width="stretch")
 
         key = f"res_{up.name}_{len(up.getvalue())}"
         if key not in st.session_state:
@@ -112,11 +112,11 @@ with tab_one:
             c1, c2 = st.columns(2)
             with c1:
                 st.markdown(f"**Charges** — total {pkr(l1.get('total_charges'))}")
-                st.dataframe(lines_table(l1.get("charges") or []), hide_index=True, use_container_width=True)
+                st.dataframe(lines_table(l1.get("charges") or []), hide_index=True, width="stretch")
             with c2:
                 st.markdown(f"**Taxes** — total {pkr(l1.get('total_taxes'))}")
                 if l1.get("taxes"):
-                    st.dataframe(lines_table(l1["taxes"]), hide_index=True, use_container_width=True)
+                    st.dataframe(lines_table(l1["taxes"]), hide_index=True, width="stretch")
                 else:
                     st.caption("Only a combined tax figure is printed on this bill.")
 

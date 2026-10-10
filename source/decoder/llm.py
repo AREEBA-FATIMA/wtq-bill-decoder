@@ -11,8 +11,6 @@ import threading
 import time
 from pathlib import Path
 
-from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
-
 from .config import ConfigError, Settings
 
 log = logging.getLogger(__name__)
@@ -26,6 +24,11 @@ SYSTEM_PROMPT = (
 
 class LLMError(RuntimeError):
     pass
+
+
+def _is_capacity_error(exc: Exception | None) -> bool:
+    text = str(exc or "")
+    return any(k in text for k in ("503", "UNAVAILABLE", "429", "RESOURCE_EXHAUSTED", "overloaded", "high demand"))
 
 
 def parse_json_object(text: str) -> dict:
@@ -102,29 +105,39 @@ class LLMClient:
                 time.sleep(wait)
             self._last_call = time.monotonic()
 
-    @retry(
-        reraise=True,
-        stop=stop_after_attempt(4),
-        wait=wait_exponential(multiplier=2, min=4, max=60),
-        retry=retry_if_exception_type(Exception),
-        before_sleep=lambda rs: log.warning("LLM call failed (%s); retrying…", rs.outcome.exception()),
-    )
     def _call_and_parse(self, prompt: str, images: list[bytes]) -> dict:
-        self._pace()
-        self.calls += 1
-        if self.s.provider == "google":
-            text = self._call_google(prompt, images)
-        else:
-            text = self._call_anthropic(prompt, images)
-        return parse_json_object(text)
+        """Retry with exponential backoff. On overload/quota errors, alternate with the fallback model."""
+        last_exc: Exception | None = None
+        for attempt in range(self.s.max_attempts):
+            use_fallback = bool(self.s.fallback_model) and attempt % 2 == 1 and _is_capacity_error(last_exc)
+            model = self.s.fallback_model if use_fallback else self.s.model_name
+            self._pace()
+            self.calls += 1
+            try:
+                if self.s.provider == "google":
+                    text = self._call_google(prompt, images, model)
+                else:
+                    text = self._call_anthropic(prompt, images, model)
+                if use_fallback:
+                    log.info("Answered by fallback model %s", model)
+                return parse_json_object(text)
+            except Exception as exc:  # network, API, or JSON errors are all retried
+                last_exc = exc
+                if attempt + 1 >= self.s.max_attempts:
+                    break
+                delay = min(60.0, 3.0 * 2 ** (attempt // 2))
+                log.warning("LLM call failed on %s (%s); retry %d/%d in %.0fs", model,
+                            str(exc)[:120], attempt + 1, self.s.max_attempts - 1, delay)
+                time.sleep(delay)
+        raise LLMError(f"LLM call failed after {self.s.max_attempts} attempts: {last_exc}") from last_exc
 
-    def _call_google(self, prompt: str, images: list[bytes]) -> str:
+    def _call_google(self, prompt: str, images: list[bytes], model: str) -> str:
         from google.genai import types
 
         parts: list = [types.Part.from_bytes(data=img, mime_type="image/png") for img in images]
         parts.append(prompt)
         resp = self._client.models.generate_content(
-            model=self.s.model_name,
+            model=model,
             contents=parts,
             config=types.GenerateContentConfig(
                 system_instruction=SYSTEM_PROMPT,
@@ -135,7 +148,7 @@ class LLMClient:
         )
         return resp.text or ""
 
-    def _call_anthropic(self, prompt: str, images: list[bytes]) -> str:
+    def _call_anthropic(self, prompt: str, images: list[bytes], model: str) -> str:
         content: list[dict] = [
             {
                 "type": "image",
@@ -145,7 +158,7 @@ class LLMClient:
         ]
         content.append({"type": "text", "text": prompt})
         resp = self._client.messages.create(
-            model=self.s.model_name,
+            model=model,
             max_tokens=8192,
             temperature=0,
             system=SYSTEM_PROMPT,
@@ -153,6 +166,3 @@ class LLMClient:
         )
         return "".join(block.text for block in resp.content if getattr(block, "type", "") == "text")
 
-
-def cache_path(settings: Settings) -> Path:
-    return settings.cache_dir
