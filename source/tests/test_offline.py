@@ -79,7 +79,7 @@ class NormalizeTests(unittest.TestCase):
     def test_zero_lines_dropped_and_subsidy_negative(self):
         raw = {"charges": [{"type": "energy", "amount": "0"}, {"type": "subsidy", "amount": "500"},
                            {"type": "weird", "amount": "10"}]}
-        rec = normalize_l1(raw, "LESCO_0001")
+        rec = normalize_l1(raw, "LESCO_9002")
         self.assertEqual(rec["provider"], "LESCO")
         self.assertEqual(rec["charges"], [{"type": "subsidy", "amount": -500}, {"type": "other", "amount": 10}])
 
@@ -97,36 +97,36 @@ class WapdaTests(unittest.TestCase):
 
 
 class TestBillFixes(unittest.TestCase):
+    """Synthetic numbers only (no test-bill values)."""
+
     def test_tax_cell_copied_from_current_bill(self):
-        raw = {"charges": [{"type": "energy", "amount": "29807"}], "total_charges": "29807", "taxes": [],
-               "total_taxes": "38323", "current_bill": "38323"}
-        self.assertEqual(normalize_l1(raw, "IESCO_0002")["total_taxes"], 8516)
+        raw = {"charges": [{"type": "energy", "amount": "10000"}], "total_charges": "10000", "taxes": [],
+               "total_taxes": "12000", "current_bill": "12000"}
+        self.assertEqual(normalize_l1(raw, "IESCO_9001")["total_taxes"], 2000)
 
     def test_lesco_fpa_outside_current_bill_ok(self):
-        rec = {"total_charges": 1601.56, "total_taxes": 308.44, "current_bill": 1678.5, "arrears": None,
-               "payable_within_due_date": 1910, "payable_after_due_date": 2051, "due_date": "2026-04-29",
-               "charges": [{"type": "energy", "amount": 1601.56}], "taxes": [{"type": "gst", "amount": 308.44}]}
+        rec = {"total_charges": 900.0, "total_taxes": 200.0, "current_bill": 980.0, "arrears": None,
+               "payable_within_due_date": 1100, "payable_after_due_date": 1150, "due_date": "2026-01-15",
+               "charges": [{"type": "energy", "amount": 900.0}], "taxes": [{"type": "gst", "amount": 200.0}]}
         self.assertEqual(check_l1(rec), [])
 
 
 class ItemisedLescoTests(unittest.TestCase):
     def test_total_fpa_not_double_counted(self):
-        raw = {"charges": [{"label": "COST OF ELECTRICITY", "type": "energy", "amount": "938.5"},
-                           {"label": "METER RENT", "type": "meter_rent", "amount": "193.60"},
-                           {"label": "F.C SURCHARGE", "type": "surcharge", "amount": "38.27"},
-                           {"label": "QUARTERLY TARIFF ADJUSTMENT", "type": "quarterly_adjustment", "amount": "31.19"},
-                           {"label": "FIXED CHARGES", "type": "fixed", "amount": "400"},
-                           {"label": "TOTAL FPA", "type": "fpa", "amount": "231.5"}],
-               "total_charges": "1601.56",
-               "taxes": [{"label": "ELECTRICITY DUTY", "type": "electricity_duty", "amount": "14.54"},
-                         {"label": "GST", "type": "gst", "amount": "256"},
-                         {"label": "GST ON FPA", "type": "gst", "amount": "35"},
-                         {"label": "ED ON FPA", "type": "electricity_duty", "amount": "2.90"}],
-               "total_taxes": "308.44"}
-        rec = normalize_l1(raw, "LESCO_0008")
-        self.assertEqual([c["type"] for c in rec["charges"]],
-                         ["energy", "fpa", "surcharge", "quarterly_adjustment", "fixed"])
-        self.assertAlmostEqual(sum(c["amount"] for c in rec["charges"]), 1601.56, places=2)
+        # Total FPA 120 = FPA line 100 + GST on FPA 18 + ED on FPA 2 (synthetic)
+        raw = {"charges": [{"label": "COST OF ELECTRICITY", "type": "energy", "amount": "500"},
+                           {"label": "METER RENT", "type": "meter_rent", "amount": "100"},
+                           {"label": "F.C SURCHARGE", "type": "surcharge", "amount": "20"},
+                           {"label": "FIXED CHARGES", "type": "fixed", "amount": "300"},
+                           {"label": "TOTAL FPA", "type": "fpa", "amount": "120"}],
+               "total_charges": "920",
+               "taxes": [{"label": "GST", "type": "gst", "amount": "90"},
+                         {"label": "GST ON FPA", "type": "gst", "amount": "18"},
+                         {"label": "ED ON FPA", "type": "electricity_duty", "amount": "2"}],
+               "total_taxes": "110"}
+        rec = normalize_l1(raw, "LESCO_9001")
+        self.assertEqual([c["type"] for c in rec["charges"]], ["energy", "fpa", "surcharge", "fixed"])
+        self.assertEqual(sum(c["amount"] for c in rec["charges"]), 920)
 
 
 class ValidateTests(unittest.TestCase):

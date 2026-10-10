@@ -25,10 +25,10 @@ Ambiguities found in the guide and how we resolved them. Add new ones here as th
 | C19 | Arrears printed as "39411 / 2" (amount / age). | First number → 39411. | Matches payable = current + arrears. |
 | C20 | Several meter rows (net metering). | First row's previous/present/units. | Main import meter. |
 | C21 | Test CSV templates were not released; organisers said to use the guide's format. | `python -m decoder templates` builds `level1.csv` (10 rows) and `level2.csv` (12 questions × 10 bills) in the guide's exact format, rows sorted by bill_id. Questions live in `examples/questions.txt` (Q1–Q2 = guide samples). | Organiser instruction; keeps the pipeline identical if official templates appear. |
-| C22 | Handwriting over the IESCO Taxes cell → model returned Current Bill as total_taxes. | If total_taxes == current_bill and only a combined tax is printed, use current_bill − total_charges (equals the printed Taxes figure). | Layout identity Net + Taxes = Current Bill; recovers the printed value. |
-| C23 | KE time-of-use bills (Off Peak / Peak rows). | Readings null; units = "Current Month … units" total; never concatenate rows. | KESC_0005 misread 238+48 as 23848. |
-| C24 | Older LESCO layout: Current Bill excludes FPA. | Check accepts charges + taxes = payable within − arrears. | LESCO_0008. |
-| C25 | Itemised LESCO: right-column "Total FPA" = FPA line + GST/ED on FPA. | Not a separate charge: dropped when charges then equal the printed TOTAL; the FPA line is the entry equal to Total FPA − on-FPA taxes. | LESCO_0008 (231.50 = 193.60 + 35 + 2.90). |
+| C22 | Handwriting over the WAPDA Taxes cell can make the model return Current Bill as total_taxes. | If total_taxes == current_bill and only a combined tax is printed, use current_bill − total_charges (equals the printed Taxes figure). | Layout identity Net + Taxes = Current Bill; recovers the printed value. |
+| C23 | KE time-of-use bills (Off Peak / Peak rows). | Readings null; units = "Current Month … units" total; never concatenate rows. | Observed misread joining two rows' units into one number. |
+| C24 | Older itemised LESCO layout: Current Bill excludes FPA. | Check accepts charges + taxes = payable within − arrears. | Avoids false re-reads on that layout. |
+| C25 | Itemised LESCO: right-column "Total FPA" = FPA line + GST/ED on FPA. | Not a separate charge: dropped when charges then equal the printed TOTAL; the FPA line is the entry equal to Total FPA − on-FPA taxes. | Layout identity, verified by the printed totals. |
 
 ## Open (fill at 12:30 once test questions are visible)
 - Resolved: per-question hints in `decoder/prompts.py::QUESTION_HINTS` map each question to the computed stats it needs.

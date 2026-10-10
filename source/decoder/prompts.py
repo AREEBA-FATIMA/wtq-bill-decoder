@@ -24,8 +24,8 @@ PROVIDER_HINTS = {
   late_payment_amounts; payable_after_due_date = the last/highest.
 - Meter readings in "Electricity You Have Used": Previous Reading, Current Reading, Units.
   If that table has SEVERAL rows (Energy - Off Peak / Peak / Import ...), previous_reading and current_reading
-  are null, and units_consumed is the total in the "Current Month ... units" box (e.g. "286 units").
-  NEVER join numbers from different rows (238 and 48 are two rows, not 23848).""",
+  are null, and units_consumed is the total in the "Current Month ... units" box.
+  NEVER join numbers from different rows (e.g. 120 and 35 on two rows are two values, not 12035).""",
     "LESCO": """LESCO / IESCO (WAPDA-style) layout — exact mapping:
 - Top-right panel: BILL MONTH (e.g. "JUL 2026" -> 2026-07), READING DATE, ISSUE DATE, DUE DATE.
   PAYABLE WITHIN DUE DATE -> payable_within_due_date (keep CR, e.g. "54770CR").
