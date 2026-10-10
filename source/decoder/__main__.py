@@ -39,6 +39,9 @@ def cmd_ping(_args) -> int:
 
 def cmd_run(args) -> int:
     bills_dir, out_dir = Path(args.bills), Path(args.out)
+    if not bills_dir.is_dir():
+        print(f"Bills folder not found: {bills_dir}", file=sys.stderr)
+        return 2
     images = {p.stem: p for p in list_bills(bills_dir)}
     if not images:
         print(f"No bill images found in {bills_dir}", file=sys.stderr)

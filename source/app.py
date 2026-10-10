@@ -159,7 +159,12 @@ with tab_batch:
     bills_dir = st.text_input("Bills folder", "../test/bills")
     csv_dir = st.text_input("Templates folder (level1.csv, level2.csv)", "../test/csv")
     out_dir = st.text_input("Output folder", "../output")
-    if st.button("Generate level1.csv and level2.csv", type="primary"):
+    folders_ok = Path(bills_dir).is_dir() and (Path(csv_dir) / "level1.csv").is_file()
+    if not folders_ok:
+        st.info("Batch mode runs where the bill images and CSV templates are on disk (e.g. on your own computer "
+                "with `streamlit run app.py`). Those folders are not available here — use the **Decode a bill** "
+                "tab to try a single bill.")
+    if st.button("Generate level1.csv and level2.csv", type="primary", disabled=not folders_ok):
         with st.spinner("Processing all bills… (about 30-40 s per bill on the free tier)"):
             code = cli_main(["run", "--bills", bills_dir, "--csv", csv_dir, "--out", out_dir])
             check = cli_main(["validate", "--csv", csv_dir, "--out", out_dir])
